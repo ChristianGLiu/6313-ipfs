@@ -20,9 +20,9 @@ global.AbortController = AbortController;
 
 // call Core API methods
 // var MFS_path = '/files_this_is_a_purchase_document_' + Date.now();
-var MFS_path = '/newMessages/files_this_is_a_purchase_document';
+var MFS_path = '/files_this_is_a_purchase_document';
 client.files.write(MFS_path,
-    new TextEncoder().encode("This is a new new purchase document!"),
+    new TextEncoder().encode("This is a new purchase document!"),
     { create: true }).then(async r => {
 
         client.files.stat(MFS_path, { hash: true }).then( async r => {
