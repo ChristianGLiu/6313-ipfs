@@ -1,12 +1,15 @@
 {
-  "author": "John Doe",
-  "license": "Apache-2.0",
+  "name": "my-first-truffle-project",
+  "version": "0.0.1",
+  "scripts": {
+    "ganache": "ganache-cli -h 0.0.0.0 --port 9545 --gasLimit 6500000000 --gasPrice 6500000 --mnemonic \"exhibit critic recipe sea exist album box actual peasant blanket priority shield\""
+  },
+  "devDependencies": {
+    "ganache-cli": "^6.12.2",
+    "truffle": "^5.1.67"
+  },
   "dependencies": {
-    "bs32": "^0.1.6",
-    "bs58": "^5.0.0",
-    "cids": "^1.1.9",
-    "crypto": "^1.0.1",
-    "ipfs-http-client": "^57.0.1",
-    "node-abort-controller": "^3.0.1"
+    "truffle-hdwallet-provider": "^1.0.17",
+    "web3": "^1.7.3"
   }
 }

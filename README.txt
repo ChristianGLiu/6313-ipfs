@@ -1,0 +1,31 @@
+ganache-cli -h 0.0.0.0 --port 8545 --gasLimit 6500000000 --gasPrice 6500000 --mnemonic "exhibit critic recipe sea exist album box actual peasant blanket priority shield"
+
+Available Accounts
+==================
+(0) 0x60684acf45B99ED7eFf2AC0FA2Db829feA0883C2 (1000 ETH)
+(1) 0x8b02FF993b6BE5231b0DA829509cdE1ad2Da5a55 (1000 ETH)
+(2) 0x70dF6170D9c2E1a67304385D2690B66F70D094Bb (1000 ETH)
+(3) 0xC340E6C18bbAFDee601aA55be23a261E66bC8c05 (1000 ETH)
+(4) 0xA29aA04F2DD7A55Fdaa983bA6626408d67b7e4a4 (1000 ETH)
+(5) 0x346B9f05B3c0958A8AdF54E78458AEE3573f91e9 (1000 ETH)
+(6) 0x42AEF5ae0EDD0337573b5bF480642DC1A8604c5c (1000 ETH)
+(7) 0x2908e7CeB5156c96872cC1d88a77da15d612D816 (1000 ETH)
+(8) 0xa2402C7e17FBcDe6E70c347d4746b66a3e936Af8 (1000 ETH)
+(9) 0xc313d84d6e4653D37261539a6f417f183d5d896f (1000 ETH)
+
+Private Keys
+==================
+(0) 0x17e527466681e0f391123dea6bc2314b4135f287e7b6d004e936f4dd9e64c812
+(1) 0x43b684db27a9c7e1cfbcf287a220accf90cb4e3b18e9883a8d6497dbf47d7bde
+(2) 0x8ecf4caee57126d03ef3a91218657be7335b36cffcb0b0f303dbbbb6833eaf6e
+(3) 0x01e75fdb4e5db5024e7823bf2c1a45140bb27ab4be9c24cbb248eb97f45cf900
+(4) 0x81b062f43954ca184f0e7f49872335c09b733918a671e2c03c65266c92768f3c
+(5) 0x9efa5c9b46fac00dee3d4690147deaf6525b9735aa3d9e3e950269316866c0be
+(6) 0xe94d599604af5372363faa03f9acc9cc846f11ea2058658902e0b0c335798de5
+(7) 0x0f68c05ffcbebf5b89316f4dbc0ec6ae4bb38a1197a44216f8d22c5b7dbeaa79
+(8) 0xbef338fab826681995417d1d895cfe8819423e40c0fade27852e63ece30d8150
+(9) 0xd33bc2c3c3b2b07663da584c7fe8af2b6ee211f80293071db297717f79b3fb17
+
+deployment: truffle migrate --reset --compile-all --network development
+
+curl http://127.0.0.1:8545 -X POST -H "Content-Type: application/json" -d '{"jsonrpc": "2.0", "method": "web3_clientVersion"}'
