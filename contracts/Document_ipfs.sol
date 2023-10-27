@@ -8,24 +8,24 @@ pragma solidity >=0.7.0 <0.9.0;
  * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
  */
 contract Document {
-    string content;
+    // string content;
     string documentIpfsCid;
 
     /**
      * @dev Store value in variable
      * @param newwords value to store
      */
-    function setContent(string memory newwords) public {
-        content = newwords;
-    }
+    // function setContent(string memory newwords) public {
+    //     content = newwords;
+    // }
 
     /**
      * @dev Return value
      * @return value of 'content'
      */
-    function getContent() public view returns (string memory) {
-        return content;
-    }
+    // function getContent() public view returns (string memory) {
+    //     return content;
+    // }
 
     /**
      * @dev Store value in variable documentIpfsCid

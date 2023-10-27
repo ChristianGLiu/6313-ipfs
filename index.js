@@ -1,58 +1,73 @@
 var Web3 = require('web3');
-import { create } from 'ipfs-http-client';
+var create = require('ipfs-http-client');
 // connect to the default API address http://localhost:5001
 const client = create();
-var MFS_path = '/files_this_is_a_purchase_document';
+var MFS_path = '/files_';
+
+let document = 'This is a purchase document!';
+let defaultAcc;
+let h, r, s, v;
+let web3, myContract;
+
+web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545/'));
 
 
 var callStoreOnLocalGanache = async function () {
-  // let web3 = new Web3("http://localhost:8545");
-  var web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545/'));
   const accounts = await web3.eth.getAccounts();
   web3.eth.defaultAccount = accounts[0];
-  console.log(web3.eth.defaultAccount);
-  // var CoursetroContract = new web3.eth.Contract(abi);
-  // var Coursetro = CoursetroContract.at(contractAddr);
-  var myContract = new web3.eth.Contract(abi, contractAddr, { from: web3.eth.defaultAccount })
-  console.log(myContract);
-  let secretWords = 'This is a purchase document!';
-  // function store(uint256 num)
-  myContract.methods.store(secretWords)
-    .send({ from: web3.eth.defaultAccount })
-    .then(function (recippt) {
-      // console.log("recippt:", JSON.stringify(recippt, null, 4))
-      const hashFromWeb3 = Web3.utils.keccak256(secretWords).toLowerCase();
-      client.files.write(MFS_path,
-        new TextEncoder().encode(hashFromWeb3),
-        { create: true }).then(async r => {
-          // console.log("")
-        }).catch(e => {
-          console.log(e);
-        });
+  defaultAcc = web3.eth.defaultAccount;
+  console.log(defaultAcc);
+  myContract = new web3.eth.Contract(abi, contractAddr, { from: defaultAcc })
+  // console.log(myContract);
+  h = web3.utils.soliditySha3(document)
+  var signature = await web3.eth.sign(h, defaultAcc) // using ECDSA
+  console.log("sig:", signature);
+  client.files.write(MFS_path + h.replace("0x", ""),
+    new TextEncoder().encode(signature),
+    { create: true }).then(async r => {
+      // console.log("")
+      myContract.methods.setIpfsCid(h.replace("0x", ""))
+        .send({ from: web3.eth.defaultAccount })
+        .then(function (recippt) {
+          console.log("callStoreOnLocalGanache recippt:", JSON.stringify(recippt, null, 4))
+        }).
+        catch(error => {
+          console.log(error)
+        }
+        )
 
-    }).
-    catch(error => {
-      console.log(error)
-    }
-    )
+    }).catch(e => {
+      console.log(e);
+    });
 }
 
 var callRetrieveOnLocalGanache = async function () {
-  // let web3 = new Web3("http://localhost:8545");
-  var web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545/'));
-  const accounts = await web3.eth.getAccounts();
-  web3.eth.defaultAccount = accounts[0];
-  console.log(web3.eth.defaultAccount);
-  // var CoursetroContract = new web3.eth.Contract(abi);
-  // var Coursetro = CoursetroContract.at(contractAddr);
-  var myContract = new web3.eth.Contract(abi, contractAddr, { from: web3.eth.defaultAccount })
-
-  console.log(myContract);
-  // function store(uint256 num)
-  myContract.methods.retrieve()
+  myContract.methods.getIpfsCid()
     .call({ from: web3.eth.defaultAccount })
     .then(function (recippt) {
-      console.log("recippt:", JSON.stringify(recippt, null, 4))
+      console.log("callRetrieveOnLocalGanache recippt:", JSON.stringify(recippt, null, 4))
+      client.files.stat(MFS_path + recippt, { hash: true }).then(async recipt => {
+        let ipfsAddr = recipt.cid.toString();
+        console.log("file ipfs:", ipfsAddr)
+        // console.log("created message on IPFS:", cid);
+        const resp = await client.cat(ipfsAddr);
+        let content = [];
+        let raw = "";
+        for await (const chunk of resp) {
+          content = [...content, ...chunk];
+          raw = Buffer.from(content).toString('utf8')
+          // console.log(JSON.parse(raw))
+          console.log(raw)
+        }
+        r = raw.slice(0, 66);
+        console.log(r);
+        s = "0x" + raw.slice(66, 130);
+        console.log(s);
+        v = "0x" + raw.slice(130, 132);
+        v = web3.utils.toDecimal(v);
+        v = v + 27;
+        console.log(v);
+      });
     }).
     catch(error => {
       console.log(error)
@@ -60,70 +75,85 @@ var callRetrieveOnLocalGanache = async function () {
     )
 }
 
-var verifyDocumentOnLocalGanache = async function () {
-  // let web3 = new Web3("http://localhost:8545");
-  var web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545/'));
-  const accounts = await web3.eth.getAccounts();
-  web3.eth.defaultAccount = accounts[0];
-  console.log(web3.eth.defaultAccount);
-  // var CoursetroContract = new web3.eth.Contract(abi);
-  // var Coursetro = CoursetroContract.at(contractAddr);
-  var myContract = new web3.eth.Contract(abi, contractAddr, { from: web3.eth.defaultAccount })
 
-  client.files.stat(MFS_path, { hash: true }).then(async r => {
-    let content = r.cid.toString();
-    // console.log("created message on IPFS:", cid);
-    myContract.methods.verify(content)
-      .call({ from: defaultAcc })
-      .then(function (recippt) {
-        console.log("verifyDocumentOnLocalGanache:", JSON.stringify(recippt, null, 4))
-      }).
-      catch(error => {
-        console.log(error)
-      }
-      )
-    // console.log(content.toString());
-  });
+var verifyDocumentOnLocalGanache = async function (accountToBeVerified) {
+  // call the verify function on the smart contract...
+
+      // check if the accountToBeVerified is the same as the one returned by the smart contract
 
 }
 
-let contractAddr = '0x2D88e22d51Be3c52de75615CD252fdF717eCC0c6';
+let contractAddr = '0x0f068bb44c0677E65c1E7e68a3f3da79Ea6313b8';
 let abi = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "num",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "newwords",
+        "type": "string"
       }
     ],
-    "name": "store",
+    "name": "setIpfsCid",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "retrieve",
+    "name": "getIpfsCid",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "string",
         "name": "",
-        "type": "uint256"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "constant": true
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_message",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_v",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_r",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "verify",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
   }
 ];
 
 callStoreOnLocalGanache().then(() => {
   setTimeout(function () {
-    // if (newState == -1) {
     callRetrieveOnLocalGanache();
+    setTimeout(function () {
+      // call the verifyDocumentOnLocalGanache checking if the account returned by the smart contract is the same as the default account...
 
-    // }
+    }, 1500);
   }, 500);
 })
   .catch(msg => {
