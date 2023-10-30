@@ -21,7 +21,7 @@ var callStoreOnLocalGanache = async function () {
   // console.log(myContract);
   h = web3.utils.soliditySha3(document)
   var signature = await web3.eth.sign(h, defaultAcc) // using ECDSA
-  console.log("sig:", signature);
+  // console.log("sig:", signature);
   client.files.write(MFS_path + h.replace("0x", ""),
     new TextEncoder().encode(signature),
     { create: true }).then(async r => {
@@ -48,8 +48,7 @@ var callRetrieveOnLocalGanache = async function () {
       console.log("callRetrieveOnLocalGanache recippt:", JSON.stringify(recippt, null, 4))
       client.files.stat(MFS_path + recippt, { hash: true }).then(async recipt => {
         let ipfsAddr = recipt.cid.toString();
-        console.log("file ipfs:", ipfsAddr)
-        // console.log("created message on IPFS:", cid);
+        // console.log(ipfsAddr)
         const resp = await client.cat(ipfsAddr);
         let content = [];
         let raw = "";
