@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "truffle-hdwallet-provider": "^1.0.17",
-    "web3": "^1.7.3"
+    "web3": "^1.7.3",
+    "ipfs-http-client": "^48.2.2"
   }
 }
